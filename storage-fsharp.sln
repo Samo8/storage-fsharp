@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Storage", "src\Storage\Storage.fsproj", "{8065847C-ED25-44BF-908E-0C4AF9772850}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "StorageExample", "src\StorageExample\StorageExample.fsproj", "{1904D5EB-A014-4377-9CC9-0C35103DDA94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8065847C-ED25-44BF-908E-0C4AF9772850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8065847C-ED25-44BF-908E-0C4AF9772850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8065847C-ED25-44BF-908E-0C4AF9772850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8065847C-ED25-44BF-908E-0C4AF9772850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8065847C-ED25-44BF-908E-0C4AF9772850} = {E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}
+		{1904D5EB-A014-4377-9CC9-0C35103DDA94} = {E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}
+	EndGlobalSection
+EndGlobal
