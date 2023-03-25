@@ -1,6 +1,5 @@
 namespace Common
 
-open Connection
 open FSharp.Json
 open System
 open System.Net.Http.Headers
@@ -51,6 +50,10 @@ module Common =
         [<JsonField("public")>]
         _public: bool
     }
+    
+    [<Measure>] type s
+    [<Measure>] type pixel
+    [<Measure>] type percent
     
     let internal addRequestHeaders (headers: Map<string, string>) (httpRequestHeaders: HttpRequestHeaders): unit =
         headers |> Seq.iter (fun (KeyValue(k, v)) -> httpRequestHeaders.Add(k, v))
