@@ -117,7 +117,7 @@ module ListBucketsTests =
 
         // Assert
         match result with
-        | Ok _ -> failwithf "Expected Error, but got Ok"
+        | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
         | Error err -> err |> should equal expectedError
         
         // Verify
@@ -203,7 +203,7 @@ module GetBucketTests =
         let result = Client.getBucket bucketId connection
 
         match result with
-        | Ok _ -> failwithf "Expected Error, but got Ok"
+        | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
         | Error err -> err |> should equal expectedError
         
         // Verify
@@ -285,7 +285,7 @@ module CreateBucketTests =
 
         // Assert
         match result with
-        | Ok _ -> failwithf "Expected Error, but got Ok"
+        | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
         | Error err -> err |> should equal expectedError
 
         // Verify
@@ -361,7 +361,7 @@ module EmptyBucketTests=
 
         // Assert
         match result with
-        | Ok _ -> failwithf "Expected Error, but got Ok"
+        | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
         | Error err -> err |> should equal expectedError
         
         // Verify
@@ -439,7 +439,7 @@ module DeleteBucketTests =
 
         // Assert
         match result with
-        | Ok _ -> failwithf "Expected Error, but got Ok"
+        | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
         | Error err -> err |> should equal expectedError
         
         // Verify
