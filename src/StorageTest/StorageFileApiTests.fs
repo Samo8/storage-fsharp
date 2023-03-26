@@ -296,7 +296,7 @@ module StorageFileApiHelperTests =
     [<Collection("moveOrCopy")>]
     module MoveOrCopyTests =
         [<Fact>]
-        let ``moveOrCopy should fail when action is not "move" or "copy"`` () =
+        let ``should fail when action is not "move" or "copy"`` () =
             // Arrange
             let connection = storageConnection {
                 url "http://example.com"
@@ -318,10 +318,10 @@ module StorageFileApiHelperTests =
             result |> should equal (Error expectedError)
 
 module StorageFileApiTests =
-    [<Collection("listFiles tests")>]
+    [<Collection("list")>]
     module ListFilesTests =
         [<Fact>]
-        let ``list should return a list of files in given bucket without path and searchOptions`` () =
+        let ``should return a list of files in given bucket without path and searchOptions`` () =
             // Arrange
             let expectedResponse = [
                 {
@@ -436,10 +436,10 @@ module StorageFileApiTests =
                     ItExpr.IsAny<CancellationToken>()
                 )
                 
-    [<Collection("move tests")>]
+    [<Collection("move")>]
     module MoveTests =
         [<Fact>]
-        let ``move should return a success MessageResponse when performed successfully`` () =
+        let ``should return a success MessageResponse when performed successfully`` () =
             // Arrange
             let expectedResponse = { message = "successfully moved file" }
             let response = """{"message":"successfully moved file"}"""
@@ -483,10 +483,10 @@ module StorageFileApiTests =
                     ItExpr.IsAny<CancellationToken>()
                 )
                 
-    [<Collection("copy tests")>]
+    [<Collection("copy")>]
     module CopyTests =
         [<Fact>]
-        let ``move should return a success MessageResponse when performed successfully`` () =
+        let ``should return a success FileResponse when performed successfully`` () =
             // Arrange
             let expectedResponse = { key = "test-bucket" }
             let response = """{"Key":"test-bucket"}"""
@@ -515,7 +515,7 @@ module StorageFileApiTests =
 
             // Assert
             match result with
-            | Ok moveResult -> moveResult |> should equal expectedResponse
+            | Ok copyResult -> copyResult |> should equal expectedResponse
             | Error err -> failwithf $"Expected Ok, but got Error: {err}"
             
             // Verify
