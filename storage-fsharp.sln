@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Storage", "src\Storage\Stor
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "StorageExample", "src\StorageExample\StorageExample.fsproj", "{1904D5EB-A014-4377-9CC9-0C35103DDA94}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "StorageTest", "src\StorageTest\StorageTest.fsproj", "{687348FB-07FE-488C-A583-8D4C107122B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +28,14 @@ Global
 		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1904D5EB-A014-4377-9CC9-0C35103DDA94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687348FB-07FE-488C-A583-8D4C107122B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687348FB-07FE-488C-A583-8D4C107122B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687348FB-07FE-488C-A583-8D4C107122B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687348FB-07FE-488C-A583-8D4C107122B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8065847C-ED25-44BF-908E-0C4AF9772850} = {E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}
 		{1904D5EB-A014-4377-9CC9-0C35103DDA94} = {E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}
+		{687348FB-07FE-488C-A583-8D4C107122B8} = {E9FA1129-4DF9-47A1-99A8-BCD6AC31FCDA}
 	EndGlobalSection
 EndGlobal
