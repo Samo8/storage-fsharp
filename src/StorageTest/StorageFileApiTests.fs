@@ -400,7 +400,7 @@ module StorageFileApiTests =
                 )
                 
         [<Fact>]
-        let ``list should return an error when the API request fails`` () =
+        let ``should return an error when the API request fails`` () =
             // Arrange
             let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
                 
@@ -422,7 +422,7 @@ module StorageFileApiTests =
 
             // Assert
             match result with
-            | Ok _ -> failwithf "Expected Error, but got Ok"
+            | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
             | Error err -> err |> should equal expectedError
             
             // Verify
@@ -526,6 +526,95 @@ module StorageFileApiTests =
                         req.Method = HttpMethod.Post &&
                         req.Headers.Contains("apiKey") &&
                         req.RequestUri.AbsoluteUri = "http://example.com/object/copy" &&
+                        req.Content.ReadAsStringAsync().Result = requestBody),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                
+    [<Collection("createSignedUrl")>]
+    module CreateSignedUrlTest =
+        [<Fact>]
+        let ``should return a signed url when performed successfully`` () =
+            // Arrange
+            let expectedResponse = "http://example.com/path/123456789/image.png"
+            let response = """{"signedURL":"/path/123456789/image.png"}"""
+            let requestBody =
+                """{
+                    "expiresIn":100,
+                    "transform":""
+                }"""
+                
+            let mockHandler = mockHttpMessageHandlerWithBody response requestBody
+            let mockHttpClient = new HttpClient(mockHandler.Object)
+            
+            let connection = storageConnection {
+                url "http://example.com"
+                headers Map["apiKey", "exampleApiKey"]
+                httpClient mockHttpClient
+            }
+            let storageFile =
+                { connection = connection
+                  bucketId = "test-bucket"
+                  headers = None }
+
+            // Act
+            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None 
+
+            // Assert
+            match result with
+            | Ok signedUrl -> signedUrl |> should equal expectedResponse
+            | Error err -> failwithf $"Expected Ok, but got Error: {err}"
+            
+            // Verify
+            mockHandler.Protected().Verify("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            mockHandler.Protected()
+                .Verify("SendAsync", Times.Once(), 
+                    ItExpr.Is<HttpRequestMessage>(fun req ->
+                        req.Method = HttpMethod.Post &&
+                        req.Headers.Contains("apiKey") &&
+                        req.RequestUri.AbsoluteUri = "http://example.com/object/sign/test-bucket/path" &&
+                        req.Content.ReadAsStringAsync().Result = requestBody),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                
+        [<Fact>]
+        let ``should return an error when the API request fails`` () =
+            // Arrange
+            let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+            let requestBody =
+                """{
+                    "expiresIn":100,
+                    "transform":""
+                }"""
+                
+            let mockHandler = mockHttpMessageHandlerWithBodyFail expectedError requestBody
+            let mockHttpClient = new HttpClient(mockHandler.Object)
+            
+            let connection = storageConnection {
+                url "http://example.com"
+                headers Map["apiKey", "exampleApiKey"]
+                httpClient mockHttpClient
+            }
+            let storageFile =
+                { connection = connection
+                  bucketId = "test-bucket"
+                  headers = None }
+
+            // Act
+            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None 
+
+            // Assert
+            match result with
+            | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
+            | Error err -> err |> should equal expectedError
+            
+            // Verify
+            mockHandler.Protected().Verify("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            mockHandler.Protected()
+                .Verify("SendAsync", Times.Once(), 
+                    ItExpr.Is<HttpRequestMessage>(fun req ->
+                        req.Method = HttpMethod.Post &&
+                        req.Headers.Contains("apiKey") &&
+                        req.RequestUri.AbsoluteUri = "http://example.com/object/sign/test-bucket/path" &&
                         req.Content.ReadAsStringAsync().Result = requestBody),
                     ItExpr.IsAny<CancellationToken>()
                 )
