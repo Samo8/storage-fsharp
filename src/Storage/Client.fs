@@ -6,15 +6,10 @@ open System.Text
 open FSharp.Json
 open Common
 open Connection
-open Http
-open StorageFileApi
+open StorageHttp
 
-module Client =
-    let from (id: string) (connection: StorageConnection): StorageFile =
-        { connection = connection
-          bucketId = id
-          headers = None }
-      
+[<AutoOpen>]
+module Client =  
     let listBuckets (connection: StorageConnection) =
         let response = connection |> get "bucket" None
         response |> deserializeResponse<Bucket list>
@@ -53,9 +48,14 @@ module Client =
         response |> deserializeResponse<MessageResponse>
         
     let deleteBucket (id: string) (connection: StorageConnection) =
-        let response = connection |> delete $"bucket/{id}" None
+        let response = connection |> delete $"bucket/{id}" None None
         response |> deserializeResponse<MessageResponse>
         
+    let from (id: string) (connection: StorageConnection): StorageFile =
+        { connection = connection
+          bucketId = id
+          headers = None }
+    
     let updateBearer (bearer: string) (connection: StorageConnection): StorageConnection =
         let formattedBearer = $"Bearer {bearer}"
         let headers =

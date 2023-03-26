@@ -1,6 +1,6 @@
 namespace Common
 
-open Connection
+open System.Net
 open FSharp.Json
 open System
 open System.Net.Http.Headers
@@ -21,6 +21,11 @@ module Common =
     
     type CreateBucket = {
         name: string
+    }
+    
+    type StorageError = {
+        message: string
+        statusCode: HttpStatusCode
     }
     
     type MessageResponse = {
@@ -51,6 +56,10 @@ module Common =
         [<JsonField("public")>]
         _public: bool
     }
+    
+    [<Measure>] type s
+    [<Measure>] type pixel
+    [<Measure>] type percent
     
     let internal addRequestHeaders (headers: Map<string, string>) (httpRequestHeaders: HttpRequestHeaders): unit =
         headers |> Seq.iter (fun (KeyValue(k, v)) -> httpRequestHeaders.Add(k, v))

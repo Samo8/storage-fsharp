@@ -1,4 +1,4 @@
-namespace Http
+namespace StorageHttp
 
 open FSharp.Json
 open System.Net
@@ -9,11 +9,6 @@ open Connection
 
 [<AutoOpen>]
 module Http =
-    type StorageError = {
-        message: string
-        statusCode: HttpStatusCode
-    }
-    
     let private getResponseBody (responseMessage: HttpResponseMessage): string = 
         responseMessage.Content.ReadAsStringAsync()
         |> Async.AwaitTask
@@ -64,20 +59,23 @@ module Http =
 
         connection |> executeHttpRequest headers requestMessage
         
-    let delete (urlSuffix: string) (headers: Map<string, string> option)
+    let delete (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent option)
                (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Delete connection.Url urlSuffix
+        match content with
+        | Some c -> requestMessage.Content <- c
+        | _      -> ()
         
         connection |> executeHttpRequest headers requestMessage 
     
-    let post (urlSuffix: string) (headers: Map<string, string> option) (content: StringContent)
+    let post (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent)
              (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Post connection.Url urlSuffix
         requestMessage.Content <- content
         
         connection |> executeHttpRequest headers requestMessage 
             
-    let put (urlSuffix: string) (headers: Map<string, string> option) (content: StringContent)
+    let put (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent)
               (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Put connection.Url urlSuffix
         requestMessage.Content <- content
