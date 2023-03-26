@@ -10,6 +10,12 @@ src/StorageExample/obj
 src/StorageExample/.idea
 src/StorageExample/*.DotSettings.user
 
+# StorageTest
+src/StorageTest/bin
+src/StorageTest/obj
+src/StorageTest/.idea
+src/StorageTest/*.DotSettings.user
+
 # vscode
 .vscode
 

@@ -9,11 +9,6 @@ open Connection
 
 [<AutoOpen>]
 module Http =
-    type StorageError = {
-        message: string
-        statusCode: HttpStatusCode
-    }
-    
     let private getResponseBody (responseMessage: HttpResponseMessage): string = 
         responseMessage.Content.ReadAsStringAsync()
         |> Async.AwaitTask

@@ -1,5 +1,6 @@
 namespace Common
 
+open System.Net
 open FSharp.Json
 open System
 open System.Net.Http.Headers
@@ -20,6 +21,11 @@ module Common =
     
     type CreateBucket = {
         name: string
+    }
+    
+    type StorageError = {
+        message: string
+        statusCode: HttpStatusCode
     }
     
     type MessageResponse = {
