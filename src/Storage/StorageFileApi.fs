@@ -1,5 +1,6 @@
 namespace Storage
 
+open System.Net
 open System.Net.Http
 open System.Text
 open FSharp.Json
@@ -49,15 +50,16 @@ module StorageFileApiHelper =
         quality: int<percent> option
     }
     
-    let getOrderByValue (orderBy: OrderBy): string =
+    let inline getOrderByValue (orderBy: OrderBy): string =
         match orderBy with
         | Ascending  -> "asc"
         | Descending -> "desc"
         
     let inline parseSearchOptions (path: string option) (searchOptions: SearchOptions Option) =
+        let prefix = ("", path) ||> Option.defaultValue
+        
         match searchOptions with
         | Some options ->
-            let prefix = ("", path) ||> Option.defaultValue
             let limit = (100, options.limit) ||> Option.defaultValue
             let offset = (0, options.offset) ||> Option.defaultValue
             let search = ("", options.search) ||> Option.defaultValue
@@ -74,25 +76,29 @@ module StorageFileApiHelper =
                               "order",  getOrderByValue sortBy.order ]
                     | _           -> Map<string, string>[]
                   "search", search ]
-        | _  -> Map<string, obj>["prefix", ""]
+        | _  ->
+            Map<string, obj>["prefix", prefix]
                 
-    let moveOrCopy<'T> (fromPath: string) (toPath: string) (storageFileApi: StorageFile) (action: string) =
-        let body =
-            Map<string, string>
-                [ "bucketId",       storageFileApi.bucketId
-                  "sourceKey",      fromPath
-                  "destinationKey", toPath ]
-                
-        let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
-        let response = storageFileApi.connection |> post $"object/{action}" None content
-        response |> deserializeResponse<'T>
+    let inline moveOrCopy<'T> (fromPath: string) (toPath: string) (action: string) (storageFileApi: StorageFile) =
+        match action with
+        | "move" | "copy" ->
+            let body =
+                Map<string, string>
+                    [ "bucketId",       storageFileApi.bucketId
+                      "sourceKey",      fromPath
+                      "destinationKey", toPath ]
+                    
+            let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
+            let response = storageFileApi.connection |> post $"object/{action}" None content
+            response |> deserializeResponse<'T>
+        | _ -> Error {message = $"Unsupported action {action}, use move/copy action!" ; statusCode = HttpStatusCode.BadRequest}
         
-    let addTransformValueIfPresent (key: string) (value: 'a option) (map: Map<string, string>) =
+    let inline addTransformValueIfPresent (key: string) (value: 'a option) (map: Map<string, string>) =
         match value with
         | Some v -> map |> Map.add key (v.ToString().ToLower())
         | _      -> map
     
-    let getTransformOptionsParamsMap (transform: TransformOptions option) =
+    let inline getTransformOptionsParamsMap (transform: TransformOptions option) =
         match transform with
         | Some t ->
             Map.empty<string, string>
@@ -103,16 +109,18 @@ module StorageFileApiHelper =
             |> addTransformValueIfPresent "quality" t.quality
         | _      -> Map.empty<string, string>
             
-    let transformOptionsToUrlParams (transform: TransformOptions option): string =
+    let inline transformOptionsToUrlParams (transform: TransformOptions option): string =
         let paramsMap = transform |> getTransformOptionsParamsMap
         match paramsMap.IsEmpty with
         | false ->
             let urlParams = paramsMap |> Map.toList
             let headKey, headValue = urlParams.Head
-            urlParams.Tail |> List.fold (fun acc (key, value) -> acc + $"&{key}={value}") $"?{headKey}={headValue}"
+            
+            ($"?{headKey}={headValue}", urlParams.Tail)
+            ||> List.fold (fun acc (key, value) -> acc + $"&{key}={value}")
         | _     -> ""
         
-    let getFullFilePath (bucketId: string) (path: string) = $"{bucketId}/{path}"
+    let inline getFullFilePath (bucketId: string) (path: string) = $"{bucketId}/{path}"
 
 [<AutoOpen>]
 module StorageFileApi =
@@ -124,10 +132,10 @@ module StorageFileApi =
         response |> deserializeResponse<FileObject list>
     
     let move (fromPath: string) (toPath: string) (storageFileApi: StorageFile) =
-        "move" |> moveOrCopy<MessageResponse> fromPath toPath storageFileApi
+        storageFileApi |> moveOrCopy<MessageResponse> fromPath toPath "move"
             
     let copy (fromPath: string) (toPath: string) (storageFileApi: StorageFile) =
-        "copy" |> moveOrCopy<FileResponse> fromPath toPath storageFileApi
+        storageFileApi |> moveOrCopy<FileResponse> fromPath toPath "copy"
     
     let createSignedUrl (path: string) (expiresIn: int<s>) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let transformValue = transform |> getTransformOptionsParamsMap
