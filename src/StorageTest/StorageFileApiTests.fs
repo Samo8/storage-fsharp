@@ -618,3 +618,88 @@ module StorageFileApiTests =
                         req.Content.ReadAsStringAsync().Result = requestBody),
                     ItExpr.IsAny<CancellationToken>()
                 )
+                
+    [<Collection("remove")>]
+    module RemoveTests =
+        [<Fact>]
+        let ``should remove files at paths and return remove files when performed successfully`` () =
+            // Arrange
+            let expectedResponse =
+                [
+                    {
+                        id = Some "1"
+                        name = "file1.txt"
+                        bucketId = Some "bucket1"
+                        owner = Some "user1"
+                        createdAt = Some (DateTime(2023, 1, 1, 12, 0 ,0))
+                        updatedAt = Some (DateTime(2023, 1, 1, 12, 0 ,0))
+                        lastAccessedAt = None
+                        metadata = Some {name = Some "value"}
+                        bucket = None
+                    }
+                    {
+                        id = Some "2"
+                        name = "file2.txt"
+                        bucketId = Some "bucket1"
+                        owner = None
+                        createdAt = None
+                        updatedAt = None
+                        lastAccessedAt = None
+                        metadata = None
+                        bucket = None
+                    }
+                ]
+            let response =
+                """[
+                    {
+                        "id": "1",
+                        "name": "file1.txt",
+                        "bucket_id": "bucket1",
+                        "owner": "user1",
+                        "created_at": "2023-01-01T12:00:00.000Z",
+                        "updated_at": "2023-01-01T12:00:00.000Z",
+                        "metadata": {
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "name": "file2.txt",
+                        "bucket_id": "bucket1"
+                    }
+               ]"""
+                
+            let requestBody = """{"prefixes":["folder-1/file-1.txt","folder-2/file-2.txt"]}"""
+                
+            let mockHandler = mockHttpMessageHandlerWithBody response requestBody
+            let mockHttpClient = new HttpClient(mockHandler.Object)
+            
+            let connection = storageConnection {
+                url "http://example.com"
+                headers Map["apiKey", "exampleApiKey"]
+                httpClient mockHttpClient
+            }
+            let storageFile =
+                { connection = connection
+                  bucketId = "test-bucket"
+                  headers = None }
+
+            // Act
+            let result = storageFile |> StorageFileApi.remove [ "folder-1/file-1.txt" ; "folder-2/file-2.txt"]
+
+            // Assert
+            match result with
+            | Ok signedUrl -> signedUrl |> should equal expectedResponse
+            | Error err -> failwithf $"Expected Ok, but got Error: {err}"
+            
+            // Verify
+            mockHandler.Protected().Verify("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            mockHandler.Protected()
+                .Verify("SendAsync", Times.Once(), 
+                    ItExpr.Is<HttpRequestMessage>(fun req ->
+                        req.Method = HttpMethod.Delete &&
+                        req.Headers.Contains("apiKey") &&
+                        req.RequestUri.AbsoluteUri = "http://example.com/object/test-bucket" &&
+                        req.Content.ReadAsStringAsync().Result = requestBody),
+                    ItExpr.IsAny<CancellationToken>()
+                )
