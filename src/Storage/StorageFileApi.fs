@@ -91,7 +91,8 @@ module StorageFileApiHelper =
             let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
             let response = storageFileApi.connection |> post $"object/{action}" None content
             response |> deserializeResponse<'T>
-        | _ -> Error {message = $"Unsupported action {action}, use move/copy action!" ; statusCode = HttpStatusCode.BadRequest}
+        | _ -> Error { message = $"Unsupported action {action}, use move/copy action!"
+                       statusCode = HttpStatusCode.BadRequest }
         
     let inline addTransformValueIfPresent (key: string) (value: 'a option) (map: Map<string, string>) =
         match value with
@@ -129,13 +130,13 @@ module StorageFileApi =
 
         let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
         let response = storageFileApi.connection |> post $"object/list/{storageFileApi.bucketId}" None content
-        response |> deserializeResponse<FileObject list>
+        deserializeResponse<FileObject list> response
     
     let move (fromPath: string) (toPath: string) (storageFileApi: StorageFile) =
-        storageFileApi |> moveOrCopy<MessageResponse> fromPath toPath "move"
+        moveOrCopy<MessageResponse> fromPath toPath "move" storageFileApi
             
     let copy (fromPath: string) (toPath: string) (storageFileApi: StorageFile) =
-        storageFileApi |> moveOrCopy<FileResponse> fromPath toPath "copy"
+        moveOrCopy<FileResponse> fromPath toPath "copy" storageFileApi
     
     let createSignedUrl (path: string) (expiresIn: int<s>) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let transformValue = transform |> getTransformOptionsParamsMap
@@ -147,8 +148,8 @@ module StorageFileApi =
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
-        let response = storageFileApi.connection |> post $"object/sign/{fullPath}" None content
-        let deserializedResponse = response |> deserializeResponse<SignUrlResponse>
+        let response = post $"object/sign/{fullPath}" None content storageFileApi.connection
+        let deserializedResponse = deserializeResponse<SignUrlResponse> response
         match deserializedResponse with
         | Ok r    -> Ok $"{storageFileApi.connection.Url}{r.signedUrl}"
         | Error e -> Error e
@@ -160,8 +161,8 @@ module StorageFileApi =
                   "paths", paths ]
         let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
         
-        let response = storageFileApi.connection |> post $"object/sign/{storageFileApi.bucketId}" None content
-        let deserializedResponse = response |> deserializeResponse<SignUrlResponse list>
+        let response = post $"object/sign/{storageFileApi.bucketId}" None content storageFileApi.connection
+        let deserializedResponse = deserializeResponse<SignUrlResponse list> response
         match deserializedResponse with
         | Ok r    ->
             Ok (r |> List.map (fun url -> $"{storageFileApi.connection.Url}{url.signedUrl}"))
@@ -169,11 +170,11 @@ module StorageFileApi =
     
     let download (path: string) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let renderPath = if transform.IsSome then "render/image/authenticated" else "object"
-        let urlParams = transform |> transformOptionsToUrlParams
+        let urlParams = transformOptionsToUrlParams transform
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
-        let response = storageFileApi.connection |> get $"{renderPath}/{fullPath}{urlParams}" None
+        let response = get $"{renderPath}/{fullPath}{urlParams}" None storageFileApi.connection
         match response with
         | Ok r ->
             let file =
@@ -185,7 +186,7 @@ module StorageFileApi =
             
     let getPublicUrl (path: string) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let renderPath = if transform.IsSome then "render/image" else "object"
-        let urlParams = transform |> transformOptionsToUrlParams
+        let urlParams = transformOptionsToUrlParams transform
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
 
@@ -195,21 +196,21 @@ module StorageFileApi =
         let body = Map<string, obj>[ "prefixes", paths ]
             
         let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
-        let response = storageFileApi.connection |> delete $"object/{storageFileApi.bucketId}" None (Some content)
-        response |> deserializeResponse<FileObject list>
+        let response = delete $"object/{storageFileApi.bucketId}" None (Some content) storageFileApi.connection
+        deserializeResponse<FileObject list> response
         
     let upload (path: string) (file: byte[]) (storageFileApi: StorageFile) =    
         let content = new ByteArrayContent(file)
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
-        let response = storageFileApi.connection |> post $"object/{fullPath}" None content
-        response |> deserializeResponse<FileResponse>
+        let response = post $"object/{fullPath}" None content storageFileApi.connection
+        deserializeResponse<FileResponse> response
         
     let update (path: string) (file: byte[]) (storageFileApi: StorageFile) =    
         let content = new ByteArrayContent(file)
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
-        let response = storageFileApi.connection |> put $"object/{fullPath}" None content
-        response |> deserializeResponse<FileResponse>
+        let response = put $"object/{fullPath}" None content storageFileApi.connection
+        deserializeResponse<FileResponse> response
