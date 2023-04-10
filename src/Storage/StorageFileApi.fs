@@ -88,9 +88,9 @@ module StorageFileApiHelper =
                       "sourceKey",      fromPath
                       "destinationKey", toPath ]
                     
-            let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
-            let response = storageFileApi.connection |> post $"object/{action}" None content
-            response |> deserializeResponse<'T>
+            let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+            let response = post $"object/{action}" None content storageFileApi.connection
+            deserializeResponse<'T> response
         | _ -> Error { message = $"Unsupported action {action}, use move/copy action!"
                        statusCode = HttpStatusCode.BadRequest }
         
@@ -111,7 +111,7 @@ module StorageFileApiHelper =
         | _      -> Map.empty<string, string>
             
     let inline transformOptionsToUrlParams (transform: TransformOptions option): string =
-        let paramsMap = transform |> getTransformOptionsParamsMap
+        let paramsMap = getTransformOptionsParamsMap transform
         match paramsMap.IsEmpty with
         | false ->
             let urlParams = paramsMap |> Map.toList
@@ -126,10 +126,10 @@ module StorageFileApiHelper =
 [<AutoOpen>]
 module StorageFileApi =
     let list (path: string option) (searchOptions: SearchOptions option) (storageFileApi: StorageFile) =
-        let body = searchOptions |> parseSearchOptions path
+        let body = parseSearchOptions path searchOptions
 
-        let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
-        let response = storageFileApi.connection |> post $"object/list/{storageFileApi.bucketId}" None content
+        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let response = post $"object/list/{storageFileApi.bucketId}" None content storageFileApi.connection
         deserializeResponse<FileObject list> response
     
     let move (fromPath: string) (toPath: string) (storageFileApi: StorageFile) =
@@ -139,12 +139,12 @@ module StorageFileApi =
         moveOrCopy<FileResponse> fromPath toPath "copy" storageFileApi
     
     let createSignedUrl (path: string) (expiresIn: int<s>) (transform: TransformOptions option) (storageFileApi: StorageFile) =
-        let transformValue = transform |> getTransformOptionsParamsMap
+        let transformValue = getTransformOptionsParamsMap transform
         let body =
             Map<string, obj>
                 [ "expiresIn", expiresIn
                   "transform", transformValue ]
-        let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
+        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
@@ -159,7 +159,7 @@ module StorageFileApi =
             Map<string, obj>
                 [ "expiresIn", expiresIn
                   "paths", paths ]
-        let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
+        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
         
         let response = post $"object/sign/{storageFileApi.bucketId}" None content storageFileApi.connection
         let deserializedResponse = deserializeResponse<SignUrlResponse list> response
@@ -195,7 +195,7 @@ module StorageFileApi =
     let remove (paths: string list) (storageFileApi: StorageFile) =
         let body = Map<string, obj>[ "prefixes", paths ]
             
-        let content = new StringContent(Json.serialize(body), Encoding.UTF8, "application/json")
+        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
         let response = delete $"object/{storageFileApi.bucketId}" None (Some content) storageFileApi.connection
         deserializeResponse<FileObject list> response
         
