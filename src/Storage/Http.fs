@@ -18,7 +18,7 @@ module Http =
         match response with
         | Ok r    ->
             printfn $"${r |> getResponseBody}"
-            Result.Ok (Json.deserialize<'T> (r |> getResponseBody))
+            Result.Ok (Json.deserialize<'T> (getResponseBody r))
         | Error e -> Result.Error e
         
     let deserializeEmptyResponse (response: Result<HttpResponseMessage, StorageError>): Result<unit, StorageError> =
@@ -35,7 +35,7 @@ module Http =
                     requestMessage.Headers |> addRequestHeaders connection.Headers
                     
                     match headers with
-                    | Some h -> requestMessage.Headers |> addRequestHeaders h
+                    | Some h -> addRequestHeaders h requestMessage.Headers
                     | _      -> ()
                     
                     let response = httpClient.SendAsync(requestMessage)
@@ -44,7 +44,7 @@ module Http =
             match result.StatusCode with
             | HttpStatusCode.OK -> Result.Ok result
             | statusCode        ->
-                Result.Error { message    = result |> getResponseBody
+                Result.Error { message    = getResponseBody result
                                statusCode = statusCode }
         with e ->
             Result.Error { message    = e.ToString()
@@ -57,7 +57,7 @@ module Http =
             (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Get connection.Url urlSuffix
 
-        connection |> executeHttpRequest headers requestMessage
+        executeHttpRequest headers requestMessage connection
         
     let delete (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent option)
                (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
@@ -66,18 +66,18 @@ module Http =
         | Some c -> requestMessage.Content <- c
         | _      -> ()
         
-        connection |> executeHttpRequest headers requestMessage 
+        executeHttpRequest headers requestMessage connection 
     
     let post (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent)
              (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Post connection.Url urlSuffix
         requestMessage.Content <- content
         
-        connection |> executeHttpRequest headers requestMessage 
+        executeHttpRequest headers requestMessage connection 
             
     let put (urlSuffix: string) (headers: Map<string, string> option) (content: HttpContent)
               (connection: StorageConnection): Result<HttpResponseMessage, StorageError> =
         let requestMessage = getRequestMessage HttpMethod.Put connection.Url urlSuffix
         requestMessage.Content <- content
         
-        connection |> executeHttpRequest headers requestMessage 
+        executeHttpRequest headers requestMessage connection 

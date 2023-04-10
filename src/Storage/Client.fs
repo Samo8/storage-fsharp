@@ -12,11 +12,11 @@ open StorageHttp
 module Client =  
     let listBuckets (connection: StorageConnection) =
         let response = connection |> get "bucket" None
-        response |> deserializeResponse<Bucket list>
+        deserializeResponse<Bucket list> response
         
     let getBucket (id: string) (connection: StorageConnection) =
         let response = connection |> get $"bucket/{id}" None
-        response |> deserializeResponse<Bucket>
+        deserializeResponse<Bucket> response
         
     let createBucket (id: string) (bucketOptions: BucketOptions option) (connection: StorageConnection) =
         let isPublic =
@@ -31,7 +31,7 @@ module Client =
         ]
         let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
         let response = connection |> post "bucket" None content
-        response |> deserializeResponse<CreateBucket>
+        deserializeResponse<CreateBucket> response
         
     let updateBucket (id: string) (bucketOptions: BucketOptions) (connection: StorageConnection) =
         let body = Map<string, Object> [
@@ -40,16 +40,16 @@ module Client =
         ]
         let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
         let response = connection |> put $"bucket/{id}" None content
-        response |> deserializeResponse<MessageResponse>
+        deserializeResponse<MessageResponse> response
         
     let emptyBucket (id: string) (connection: StorageConnection) =
         let content = new StringContent(Json.serialize [], Encoding.UTF8, "application/json")
         let response = connection |> post $"bucket/{id}/empty" None content
-        response |> deserializeResponse<MessageResponse>
+        deserializeResponse<MessageResponse> response
         
     let deleteBucket (id: string) (connection: StorageConnection) =
         let response = connection |> delete $"bucket/{id}" None None
-        response |> deserializeResponse<MessageResponse>
+        deserializeResponse<MessageResponse> response
         
     let from (id: string) (connection: StorageConnection): StorageFile =
         { connection = connection
