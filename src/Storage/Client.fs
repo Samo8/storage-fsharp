@@ -10,15 +10,16 @@ open StorageHttp
 
 [<AutoOpen>]
 module Client =  
-    let listBuckets (connection: StorageConnection) =
+    let listBuckets (connection: StorageConnection): Result<Bucket list, StorageError> =
         let response = get "bucket" None connection
         deserializeResponse<Bucket list> response
         
-    let getBucket (id: string) (connection: StorageConnection) =
+    let getBucket (id: string) (connection: StorageConnection): Result<Bucket, StorageError> =
         let response = get $"bucket/{id}" None connection
         deserializeResponse<Bucket> response
         
-    let createBucket (id: string) (bucketOptions: BucketOptions option) (connection: StorageConnection) =
+    let createBucket (id: string) (bucketOptions: BucketOptions option)
+                     (connection: StorageConnection): Result<CreateBucket, StorageError> =
         let isPublic =
             match bucketOptions with
             | Some s -> s._public
@@ -33,7 +34,8 @@ module Client =
         let response = post "bucket" None content connection
         deserializeResponse<CreateBucket> response
         
-    let updateBucket (id: string) (bucketOptions: BucketOptions) (connection: StorageConnection) =
+    let updateBucket (id: string) (bucketOptions: BucketOptions)
+                     (connection: StorageConnection): Result<MessageResponse, StorageError> =
         let body = Map<string, Object> [
             "id", id
             "public", bucketOptions._public
@@ -42,12 +44,12 @@ module Client =
         let response = put $"bucket/{id}" None content connection
         deserializeResponse<MessageResponse> response
         
-    let emptyBucket (id: string) (connection: StorageConnection) =
+    let emptyBucket (id: string) (connection: StorageConnection): Result<MessageResponse, StorageError> =
         let content = new StringContent(Json.serialize [], Encoding.UTF8, "application/json")
         let response = post $"bucket/{id}/empty" None content connection
         deserializeResponse<MessageResponse> response
         
-    let deleteBucket (id: string) (connection: StorageConnection) =
+    let deleteBucket (id: string) (connection: StorageConnection): Result<MessageResponse, StorageError> =
         let response = delete $"bucket/{id}" None None connection
         deserializeResponse<MessageResponse> response
         

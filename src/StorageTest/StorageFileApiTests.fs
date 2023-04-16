@@ -309,7 +309,7 @@ module StorageFileApiHelperTests =
                 
             let expectedError =
                 { message = "Unsupported action randomAction, use move/copy action!"
-                  statusCode = HttpStatusCode.BadRequest }
+                  statusCode = None }
 
             // Act
             let result = storageFile |> StorageFileApiHelper.moveOrCopy "from" "to" "randomAction"
@@ -402,7 +402,7 @@ module StorageFileApiTests =
         [<Fact>]
         let ``should return an error when the API request fails`` () =
             // Arrange
-            let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+            let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
                 
             let mockHandler = mockHttpMessageHandlerFail expectedError
             let mockHttpClient = new HttpClient(mockHandler.Object)
@@ -579,7 +579,7 @@ module StorageFileApiTests =
         [<Fact>]
         let ``should return an error when the API request fails`` () =
             // Arrange
-            let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+            let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
             let requestBody =
                 """{
                     "expiresIn":100,

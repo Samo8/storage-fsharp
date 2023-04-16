@@ -101,7 +101,7 @@ module ListBucketsTests =
     [<Fact>]
     let ``listBuckets should return an error when the API request fails`` () =
         // Arrange
-        let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+        let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
 
         let mockHandler = mockHttpMessageHandlerFail expectedError
         let mockHttpClient = new HttpClient(mockHandler.Object)
@@ -188,7 +188,7 @@ module GetBucketTests =
     let ``getBucket should return an error when the API request fails`` () =
         // Arrange
         let bucketId = "123"
-        let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+        let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
             
         let mockHandler = mockHttpMessageHandlerFail expectedError
         let mockHttpClient = new HttpClient(mockHandler.Object)
@@ -264,7 +264,7 @@ module CreateBucketTests =
     [<Fact>]
     let ``createBucket should return an error when the API request fails`` () =
         // Arrange
-        let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+        let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
         let requestBody =
             """{
                 "id":"test-bucket",
@@ -345,7 +345,7 @@ module EmptyBucketTests=
     let ``emptyBucket should return an error when the API request fails`` () =
         // Arrange
         let bucketId = "123"
-        let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+        let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
             
         let mockHandler = mockHttpMessageHandlerFail expectedError
         let mockHttpClient = new HttpClient(mockHandler.Object)
@@ -423,7 +423,7 @@ module DeleteBucketTests =
     let ``deleteBucket should return an error when the API request fails`` () =
         // Arrange
         let bucketId = "123"
-        let expectedError = { message = "Bad Request"; statusCode = HttpStatusCode.BadRequest }
+        let expectedError = { message = "Bad Request"; statusCode = Some HttpStatusCode.BadRequest }
             
         let mockHandler = mockHttpMessageHandlerFail expectedError
         let mockHttpClient = new HttpClient(mockHandler.Object)
