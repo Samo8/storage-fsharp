@@ -45,10 +45,10 @@ module Http =
             | HttpStatusCode.OK -> Result.Ok result
             | statusCode        ->
                 Result.Error { message    = getResponseBody result
-                               statusCode = statusCode }
+                               statusCode = Some statusCode }
         with e ->
             Result.Error { message    = e.ToString()
-                           statusCode = HttpStatusCode.BadRequest }
+                           statusCode = None }
             
     let private getRequestMessage (httpMethod: HttpMethod) (url: string) (urlSuffix: string): HttpRequestMessage =
         new HttpRequestMessage(httpMethod, $"{url}/{urlSuffix}")

@@ -25,7 +25,7 @@ module Common =
     
     type StorageError = {
         message: string
-        statusCode: HttpStatusCode
+        statusCode: HttpStatusCode option
     }
     
     type MessageResponse = {

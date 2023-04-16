@@ -50,12 +50,12 @@ module StorageFileApiHelper =
         quality: int<percent> option
     }
     
-    let inline getOrderByValue (orderBy: OrderBy): string =
+    let getOrderByValue (orderBy: OrderBy): string =
         match orderBy with
         | Ascending  -> "asc"
         | Descending -> "desc"
         
-    let inline parseSearchOptions (path: string option) (searchOptions: SearchOptions Option) =
+    let parseSearchOptions (path: string option) (searchOptions: SearchOptions Option) =
         let prefix = ("", path) ||> Option.defaultValue
         
         match searchOptions with
@@ -79,7 +79,7 @@ module StorageFileApiHelper =
         | _  ->
             Map<string, obj>["prefix", prefix]
                 
-    let inline moveOrCopy<'T> (fromPath: string) (toPath: string) (action: string) (storageFileApi: StorageFile) =
+    let moveOrCopy<'T> (fromPath: string) (toPath: string) (action: string) (storageFileApi: StorageFile) =
         match action with
         | "move" | "copy" ->
             let body =
@@ -92,14 +92,14 @@ module StorageFileApiHelper =
             let response = post $"object/{action}" None content storageFileApi.connection
             deserializeResponse<'T> response
         | _ -> Error { message = $"Unsupported action {action}, use move/copy action!"
-                       statusCode = HttpStatusCode.BadRequest }
+                       statusCode = None }
         
-    let inline addTransformValueIfPresent (key: string) (value: 'a option) (map: Map<string, string>) =
+    let addTransformValueIfPresent (key: string) (value: 'a option) (map: Map<string, string>) =
         match value with
         | Some v -> map |> Map.add key (v.ToString().ToLower())
         | _      -> map
     
-    let inline getTransformOptionsParamsMap (transform: TransformOptions option) =
+    let getTransformOptionsParamsMap (transform: TransformOptions option) =
         match transform with
         | Some t ->
             Map.empty<string, string>
@@ -110,7 +110,7 @@ module StorageFileApiHelper =
             |> addTransformValueIfPresent "quality" t.quality
         | _      -> Map.empty<string, string>
             
-    let inline transformOptionsToUrlParams (transform: TransformOptions option): string =
+    let transformOptionsToUrlParams (transform: TransformOptions option): string =
         let paramsMap = getTransformOptionsParamsMap transform
         match paramsMap.IsEmpty with
         | false ->
@@ -121,11 +121,12 @@ module StorageFileApiHelper =
             ||> List.fold (fun acc (key, value) -> acc + $"&{key}={value}")
         | _     -> ""
         
-    let inline getFullFilePath (bucketId: string) (path: string) = $"{bucketId}/{path}"
+    let getFullFilePath (bucketId: string) (path: string) = $"{bucketId}/{path}"
 
 [<AutoOpen>]
 module StorageFileApi =
-    let list (path: string option) (searchOptions: SearchOptions option) (storageFileApi: StorageFile) =
+    let list (path: string option) (searchOptions: SearchOptions option)
+             (storageFileApi: StorageFile): Result<FileObject list, StorageError> =
         let body = parseSearchOptions path searchOptions
 
         let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
