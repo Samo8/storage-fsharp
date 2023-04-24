@@ -14,7 +14,7 @@ module Http =
         |> Async.AwaitTask
         |> Async.RunSynchronously
             
-    /// Deserialize given response
+    /// Deserializes given response
     let deserializeResponse<'T> (response: Result<HttpResponseMessage, StorageError>): Result<'T, StorageError> =        
         match response with
         | Ok r    ->
@@ -22,7 +22,7 @@ module Http =
             Result.Ok (Json.deserialize<'T> (getResponseBody r))
         | Error e -> Result.Error e
         
-    /// Deserialize empty (unit) response
+    /// Deserializes empty (unit) response
     let deserializeEmptyResponse (response: Result<HttpResponseMessage, StorageError>): Result<unit, StorageError> =
         match response with
         | Ok _    -> Result.Ok ()
