@@ -26,6 +26,9 @@ module StorageFileApiHelper =
         order:  OrderBy
     }
     
+    /// Represents file path
+    type Path = string
+    
     /// Represents possible sort options parameters
     type SearchOptions = {
         limit:  int option
@@ -66,7 +69,7 @@ module StorageFileApiHelper =
         
     /// Parses optional search options to map representation.
     /// If no search options is given then uses default values
-    let parseSearchOptions (path: string option) (searchOptions: SearchOptions Option) =
+    let parseSearchOptions (path: Path option) (searchOptions: SearchOptions Option) =
         let prefix = ("", path) ||> Option.defaultValue
         
         match searchOptions with
@@ -91,7 +94,7 @@ module StorageFileApiHelper =
             Map<string, obj>["prefix", prefix]
                 
     /// Helper function for performing move or copy operation 
-    let moveOrCopy<'T> (fromPath: string) (toPath: string) (action: string) (storageFileApi: StorageFile) =
+    let moveOrCopy<'T> (fromPath: Path) (toPath: Path) (action: string) (storageFileApi: StorageFile) =
         match action with
         | "move" | "copy" ->
             let body =
@@ -142,7 +145,7 @@ module StorageFileApiHelper =
 [<AutoOpen>]
 module StorageFileApi =
     /// Lists files at given path filtered by given search options
-    let list (path: string option) (searchOptions: SearchOptions option)
+    let list (path: Path option) (searchOptions: SearchOptions option)
              (storageFileApi: StorageFile): Result<FileObject list, StorageError> =
         let body = parseSearchOptions path searchOptions
 
@@ -151,12 +154,12 @@ module StorageFileApi =
         deserializeResponse<FileObject list> response
     
     /// Moves file from given location to given location
-    let move (fromPath: string) (toPath: string)
+    let move (fromPath: Path) (toPath: Path)
              (storageFileApi: StorageFile): Result<MessageResponse, StorageError> =
         moveOrCopy<MessageResponse> fromPath toPath "move" storageFileApi
             
     /// Copies file from given location to given location
-    let copy (fromPath: string) (toPath: string)
+    let copy (fromPath: Path) (toPath: Path)
              (storageFileApi: StorageFile): Result<FileResponse, StorageError> =
         moveOrCopy<FileResponse> fromPath toPath "copy" storageFileApi
     
@@ -179,7 +182,7 @@ module StorageFileApi =
         | Error e -> Error e
         
     /// Creates signed urls for files at given path with given options
-    let createSignedUrls (paths: string list) (expiresIn: int<s>) (storageFileApi: StorageFile) =
+    let createSignedUrls (paths: Path list) (expiresIn: int<s>) (storageFileApi: StorageFile) =
         let body =
             Map<string, obj>
                 [ "expiresIn", expiresIn
@@ -194,7 +197,7 @@ module StorageFileApi =
         | Error e -> Error e
     
     /// Downloads file at given given path with given transform options
-    let download (path: string) (transform: TransformOptions option) (storageFileApi: StorageFile) =
+    let download (path: Path) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let renderPath = if transform.IsSome then "render/image/authenticated" else "object"
         let urlParams = transformOptionsToUrlParams transform
         
@@ -211,7 +214,7 @@ module StorageFileApi =
         | Error e -> Error e    
             
     /// Gets public url for public file at given path
-    let getPublicUrl (path: string) (transform: TransformOptions option) (storageFileApi: StorageFile) =
+    let getPublicUrl (path: Path) (transform: TransformOptions option) (storageFileApi: StorageFile) =
         let renderPath = if transform.IsSome then "render/image" else "object"
         let urlParams = transformOptionsToUrlParams transform
         
@@ -220,7 +223,7 @@ module StorageFileApi =
         $"{storageFileApi.connection.Url}/{renderPath}/public/{fullPath}{urlParams}"
         
     /// Removes files at given paths
-    let remove (paths: string list) (storageFileApi: StorageFile) =
+    let remove (paths: Path list) (storageFileApi: StorageFile) =
         let body = Map<string, obj>[ "prefixes", paths ]
             
         let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
@@ -228,7 +231,7 @@ module StorageFileApi =
         deserializeResponse<FileObject list> response
         
     /// Uploads given file to given path
-    let upload (path: string) (file: byte[]) (storageFileApi: StorageFile) =    
+    let upload (path: Path) (file: byte[]) (storageFileApi: StorageFile) =    
         let content = new ByteArrayContent(file)
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
@@ -237,7 +240,7 @@ module StorageFileApi =
         deserializeResponse<FileResponse> response
         
     /// Replaces file at given path by given file
-    let update (path: string) (file: byte[]) (storageFileApi: StorageFile) =    
+    let update (path: Path) (file: byte[]) (storageFileApi: StorageFile) =    
         let content = new ByteArrayContent(file)
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
