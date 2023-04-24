@@ -7,7 +7,7 @@ open System.Threading
 open System.Threading.Tasks
 open Moq
 open Moq.Protected
-open Common
+open Storage.Common
 
 [<AutoOpen>]
 module Helper =

@@ -8,8 +8,6 @@ open Moq
 open Moq.Protected
 open Xunit
 open Helper
-open Common
-open Connection
 
 module StorageFileApiHelperTests =
     [<Collection("getOrderByValue")>]

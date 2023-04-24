@@ -8,24 +8,8 @@ open FsUnit.Xunit
 open Moq
 open Moq.Protected
 open Xunit
-open Common
-open Connection
 open Helper
 open Storage
-
-// type MockHttpMessageHandler(responseContent: string) =
-//     inherit HttpMessageHandler()
-//
-//     member this.ResponseContent
-//         with get() = responseContent
-//
-//     override this.SendAsync(_, __) =
-//         let responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-//         responseMessage.Content <- new StringContent(responseContent)
-//         responseMessage.Content.Headers.ContentType <- MediaTypeHeaderValue("application/json")
-//
-//         let response = Task.FromResult(responseMessage)
-//         response
 
 [<Collection("listBuckets tests")>]
 module ListBucketsTests =
