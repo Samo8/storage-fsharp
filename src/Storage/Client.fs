@@ -34,7 +34,7 @@ module Client =
             "name", id
             "public", isPublic
         ]
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         let response = post "bucket" None content connection
         deserializeResponse<CreateBucket> response
         
@@ -45,13 +45,13 @@ module Client =
             "id", id
             "public", bucketOptions._public
         ]
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         let response = put $"bucket/{id}" None content connection
         deserializeResponse<MessageResponse> response
         
     /// Empties bucket with given id
     let emptyBucket (id: string) (connection: StorageConnection): Result<MessageResponse, StorageError> =
-        let content = new StringContent(Json.serialize [], Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize [])
         let response = post $"bucket/{id}/empty" None content connection
         deserializeResponse<MessageResponse> response
         
