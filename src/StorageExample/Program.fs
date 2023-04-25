@@ -1,2 +1,18 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿open Storage
+
+let baseUrl = "https://<project-id>.supabase.co/storage/v1"
+let apiKey = "<api-key>"
+
+let connection = storageConnection {
+     url baseUrl
+     headers (Map [ "apiKey", apiKey
+                    "Authorization", $"Bearer {apiKey}" ] )
+}
+
+let response = connection
+                |> from "xxx"
+                |> list None None      
+
+match response with
+| Ok r    -> printfn $"{r}"
+| Error e -> printfn $"{e}"

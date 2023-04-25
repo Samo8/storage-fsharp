@@ -1,3 +1,5 @@
+module StorageFileApiTests
+
 open System
 open System.Net
 open System.Net.Http
