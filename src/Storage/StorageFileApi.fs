@@ -103,7 +103,7 @@ module StorageFileApiHelper =
                       "sourceKey",      fromPath
                       "destinationKey", toPath ]
                     
-            let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+            let content = getStringContent (Json.serialize body)
             let response = post $"object/{action}" None content storageFileApi.connection
             deserializeResponse<'T> response
         | _ -> Error { message = $"Unsupported action {action}, use move/copy action!"
@@ -149,7 +149,7 @@ module StorageFileApi =
              (storageFileApi: StorageFile): Result<FileObject list, StorageError> =
         let body = parseSearchOptions path searchOptions
 
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         let response = post $"object/list/{storageFileApi.bucketId}" None content storageFileApi.connection
         deserializeResponse<FileObject list> response
     
@@ -171,7 +171,7 @@ module StorageFileApi =
             Map<string, obj>
                 [ "expiresIn", expiresIn
                   "transform", transformValue ]
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         
         let fullPath = getFullFilePath storageFileApi.bucketId path
         
@@ -187,7 +187,7 @@ module StorageFileApi =
             Map<string, obj>
                 [ "expiresIn", expiresIn
                   "paths", paths ]
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         
         let response = post $"object/sign/{storageFileApi.bucketId}" None content storageFileApi.connection
         let deserializedResponse = deserializeResponse<SignUrlResponse list> response
@@ -226,7 +226,7 @@ module StorageFileApi =
     let remove (paths: Path list) (storageFileApi: StorageFile) =
         let body = Map<string, obj>[ "prefixes", paths ]
             
-        let content = new StringContent(Json.serialize body, Encoding.UTF8, "application/json")
+        let content = getStringContent (Json.serialize body)
         let response = delete $"object/{storageFileApi.bucketId}" None (Some content) storageFileApi.connection
         deserializeResponse<FileObject list> response
         

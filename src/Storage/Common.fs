@@ -1,6 +1,8 @@
 namespace Storage
 
 open System.Net
+open System.Net.Http
+open System.Text
 open FSharp.Json
 open System
 open System.Net.Http.Headers
@@ -75,3 +77,6 @@ module Common =
     /// Adds HttpRequestHeaders to given headers Map
     let internal addRequestHeaders (headers: Map<string, string>) (httpRequestHeaders: HttpRequestHeaders): unit =
         headers |> Seq.iter (fun (KeyValue(k, v)) -> httpRequestHeaders.Add(k, v))
+        
+    /// Creates `StringContent` from Json encoded string
+    let getStringContent (body: string) = new StringContent(body, Encoding.UTF8, "application/json")
