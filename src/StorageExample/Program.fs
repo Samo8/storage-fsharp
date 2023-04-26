@@ -9,9 +9,11 @@ let connection = storageConnection {
                     "Authorization", $"Bearer {apiKey}" ] )
 }
 
-let response = connection
-                |> from "xxx"
-                |> list None None      
+let response =
+    connection
+    |> from "xxx"
+    |> list None None
+    |> Async.RunSynchronously
 
 match response with
 | Ok r    -> printfn $"{r}"
