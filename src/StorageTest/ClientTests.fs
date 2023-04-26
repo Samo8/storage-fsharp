@@ -64,7 +64,7 @@ module ListBucketsTests =
         }
 
         // Act
-        let result = Client.listBuckets connection
+        let result = Client.listBuckets connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -97,7 +97,7 @@ module ListBucketsTests =
         }
 
         // Act
-        let result = Client.listBuckets connection
+        let result = Client.listBuckets connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -149,7 +149,7 @@ module GetBucketTests =
         }
 
         // Act
-        let result = Client.getBucket bucketId connection
+        let result = Client.getBucket bucketId connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -184,7 +184,7 @@ module GetBucketTests =
         }
 
         // Act
-        let result = Client.getBucket bucketId connection
+        let result = Client.getBucket bucketId connection |> Async.RunSynchronously
 
         match result with
         | Ok ok -> failwithf $"Expected Error, but got Ok: {ok}"
@@ -228,7 +228,7 @@ module CreateBucketTests =
         }
 
         // Act
-        let result = Client.createBucket "test-bucket" (Some { _public = true }) connection
+        let result = Client.createBucket "test-bucket" (Some { _public = true }) connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -265,7 +265,7 @@ module CreateBucketTests =
         }
 
         // Act
-        let result = Client.createBucket "test-bucket" (Some { _public = true }) connection
+        let result = Client.createBucket "test-bucket" (Some { _public = true }) connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -306,7 +306,7 @@ module EmptyBucketTests=
         }
 
         // Act
-        let result = Client.emptyBucket bucketId connection
+        let result = Client.emptyBucket bucketId connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -341,7 +341,7 @@ module EmptyBucketTests=
         }
 
         // Act
-        let result = Client.emptyBucket bucketId connection
+        let result = Client.emptyBucket bucketId connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -384,7 +384,7 @@ module DeleteBucketTests =
         }
 
         // Act
-        let result = Client.deleteBucket bucketId connection
+        let result = Client.deleteBucket bucketId connection |> Async.RunSynchronously
 
         // Assert
         match result with
@@ -419,7 +419,7 @@ module DeleteBucketTests =
         }
 
         // Act
-        let result = Client.deleteBucket bucketId connection
+        let result = Client.deleteBucket bucketId connection |> Async.RunSynchronously
 
         // Assert
         match result with

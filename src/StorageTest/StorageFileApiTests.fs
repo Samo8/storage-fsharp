@@ -312,7 +312,7 @@ module StorageFileApiHelperTests =
                   statusCode = None }
 
             // Act
-            let result = storageFile |> StorageFileApiHelper.moveOrCopy "from" "to" "randomAction"
+            let result = storageFile |> StorageFileApiHelper.moveOrCopy "from" "to" "randomAction" |> Async.RunSynchronously
 
             // Assert
             result |> should equal (Error expectedError)
@@ -381,7 +381,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.list None None 
+            let result = storageFile |> StorageFileApi.list None None |> Async.RunSynchronously
 
             // Assert
             match result with
@@ -418,7 +418,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.list None None 
+            let result = storageFile |> StorageFileApi.list None None |> Async.RunSynchronously 
 
             // Assert
             match result with
@@ -464,7 +464,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.move "from" "to" 
+            let result = storageFile |> StorageFileApi.move "from" "to" |> Async.RunSynchronously
 
             // Assert
             match result with
@@ -511,7 +511,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.copy "from" "to" 
+            let result = storageFile |> StorageFileApi.copy "from" "to" |> Async.RunSynchronously
 
             // Assert
             match result with
@@ -557,7 +557,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None 
+            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None |> Async.RunSynchronously 
 
             // Assert
             match result with
@@ -600,7 +600,7 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None 
+            let result = storageFile |> StorageFileApi.createSignedUrl "path" 100<s> None |> Async.RunSynchronously
 
             // Assert
             match result with
@@ -685,7 +685,10 @@ module StorageFileApiTests =
                   headers = None }
 
             // Act
-            let result = storageFile |> StorageFileApi.remove [ "folder-1/file-1.txt" ; "folder-2/file-2.txt"]
+            let result =
+                storageFile
+                |> StorageFileApi.remove [ "folder-1/file-1.txt" ; "folder-2/file-2.txt"]
+                |> Async.RunSynchronously
 
             // Assert
             match result with
