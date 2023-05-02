@@ -80,3 +80,12 @@ module Common =
         
     /// Creates `StringContent` from Json encoded string
     let getStringContent (body: string) = new StringContent(body, Encoding.UTF8, "application/json")
+    
+    /// Updates Bearer token in connection Header and returns new StorageConnection
+    let updateBearer (bearer: string) (connection: StorageConnection): StorageConnection =
+        let formattedBearer = $"Bearer {bearer}"
+        let headers =
+            connection.Headers |> Map.change "Authorization" (fun authorization ->
+                match authorization with | Some _ | None -> Some formattedBearer
+            )
+        { connection with Headers = headers }
