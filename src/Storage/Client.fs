@@ -81,12 +81,3 @@ module Client =
         { connection = connection
           bucketId = id
           headers = None }
-    
-    /// Updates Bearer token in connection Header and returns new StorageConnection
-    let updateBearer (bearer: string) (connection: StorageConnection): StorageConnection =
-        let formattedBearer = $"Bearer {bearer}"
-        let headers =
-            connection.Headers |> Map.change "Authorization" (fun authorization ->
-                match authorization with | Some _ | None -> Some formattedBearer
-            )
-        { connection with Headers = headers }
