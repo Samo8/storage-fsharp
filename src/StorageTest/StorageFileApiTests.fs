@@ -10,6 +10,7 @@ open Moq
 open Moq.Protected
 open Xunit
 open Helper
+open Storage.Common
 
 module StorageFileApiHelperTests =
     [<Collection("getOrderByValue")>]

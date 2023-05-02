@@ -10,6 +10,7 @@ open Moq.Protected
 open Xunit
 open Helper
 open Storage
+open Storage.Common
 
 [<Collection("listBuckets tests")>]
 module ListBucketsTests =

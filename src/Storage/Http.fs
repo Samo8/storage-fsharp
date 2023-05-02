@@ -4,9 +4,9 @@ open FSharp.Json
 open System.Net
 open System.Net.Http
 open Storage
+open Storage.Common
 
 /// Contains functions for performing http request and serialization/deserialization of data
-[<AutoOpen>]
 module Http =
     /// Parses HttpResponseMessage to it's string form
     let private getResponseBody (responseMessage: HttpResponseMessage): string = 
