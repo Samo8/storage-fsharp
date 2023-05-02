@@ -1,14 +1,13 @@
 namespace Storage
 
+open System
 open System.Net
 open System.Net.Http
+open System.Net.Http.Headers
 open System.Text
 open FSharp.Json
-open System
-open System.Net.Http.Headers
 
 /// Contains helper functions for another modules and shared types
-[<AutoOpen>]
 module Common =
     /// Represents bucket from storage api
     type Bucket = {
