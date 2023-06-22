@@ -27,7 +27,7 @@
     <PackageProjectUrl>..</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/supabase-community/storage-fsharp</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/supabase-community/gotrue-fsharp</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/supabase-community/storage-fsharp</PackageProjectUrl>
     <RepositoryBranch>develop</RepositoryBranch>
     <UsesMarkdownComments>true</UsesMarkdownComments>
     <!-- FSharp.Formatting (fsdocs) end -->
