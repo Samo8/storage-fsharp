@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>storage-fsharp</PackageId>
+    <PackageId>supabase-storage-fsharp</PackageId>
     <Authors>Samuel Dubovec</Authors>
     <Copyright>MIT</Copyright>
     <ReleaseVersion>0.0.1</ReleaseVersion>
@@ -27,6 +27,7 @@
     <PackageProjectUrl>..</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/supabase-community/storage-fsharp</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/supabase-community/storage-fsharp</PackageProjectUrl>
     <RepositoryBranch>develop</RepositoryBranch>
     <UsesMarkdownComments>true</UsesMarkdownComments>
     <!-- FSharp.Formatting (fsdocs) end -->
