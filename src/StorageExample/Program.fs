@@ -9,12 +9,12 @@ let connection = storageConnection {
                     "Authorization", $"Bearer {apiKey}" ] )
 }
 
-let response =
+let result =
     connection
-    |> from "xxx"
-    |> list None None
+    |> from "bucket-name"
+    |> StorageFileApi.download "path-to-file" None
     |> Async.RunSynchronously
 
-match response with
+match result with
 | Ok r    -> printfn $"{r}"
 | Error e -> printfn $"{e}"
